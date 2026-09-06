@@ -1238,12 +1238,12 @@ h1 {
 
   <div class="dash-grid">
     <aside class="sidebar glass">
-      <button class="selected">Overview</button>
-      <button>Messages</button>
-      <button>Reports</button>
-      <button>Documents</button>
-      <button>Chairman controls</button>
-      <button>Settings</button>
+      <button class="selected" onclick="openDashboardSection('overview', this)">Overview</button>
+      <button onclick="openDashboardSection('messages', this)">Messages</button>
+      <button onclick="openDashboardSection('reports', this)">Reports</button>
+      <button onclick="openDashboardSection('documents', this)">Documents</button>
+      <button onclick="openDashboardSection('chairman', this)">Chairman controls</button>
+      <button onclick="openDashboardSection('settings', this)">Settings</button>
     </aside>
 
     <div class="dash-main">
@@ -1366,13 +1366,20 @@ h1 {
         </div>
       </section>
 
-      <section class="panel glass">
+      <section class="panel glass" id="operationsPanel">
         <h3>Live operations</h3>
         <div class="operations-feed" id="operationsFeed" aria-live="polite"></div>
         <p class="manager-help">This activity feed records actual product and room changes made in this browser. It is stored locally and updates as changes happen.</p>
       </section>
 
-      <section class="panel glass">
+      <section class="panel glass" id="accountSettings">
+        <div class="eyebrow">Account settings</div>
+        <h3>Your Board profile</h3>
+        <p class="manager-help">Your displayed name and company title appear beside your messages. Chairman authority is managed securely in Supabase and cannot be changed here.</p>
+        <div class="notice" id="settingsNotice"></div>
+      </section>
+
+      <section class="panel glass" id="chairmanControls">
         <div class="product-manager">
           <div>
             <div class="eyebrow">Chairman controls / products</div>
@@ -1598,7 +1605,11 @@ async function openBoardSession(user) {
   document.querySelector(".footer").style.display = "none";
   dashboard.classList.add("active");
   window.scrollTo(0, 0);
-  const { data: profile, error } = await supabaseClient.from("profiles").select("full_name,role_title,is_chairman").eq("id", user.id).single();
+  let { data: profile, error } = await supabaseClient.from("profiles").select("full_name,role_title,is_chairman").eq("id", user.id).single();
+  if (!error && !profile.is_chairman) {
+    const { data: claimed } = await supabaseClient.rpc("claim_initial_chairman");
+    if (claimed) ({ data: profile, error } = await supabaseClient.from("profiles").select("full_name,role_title,is_chairman").eq("id", user.id).single());
+  }
   currentProfile = profile;
   if (error) showBoardNotice(`Board setup is incomplete: ${error.message}`);
   await loadSharedRooms();
@@ -1702,6 +1713,18 @@ async function sendMessage(event) {
   input.value = "";
   document.getElementById("messageFile").value = "";
   await renderMessages();
+}
+
+function openDashboardSection(view, button) {
+  document.querySelectorAll(".sidebar button").forEach(item => item.classList.remove("selected"));
+  button.classList.add("selected");
+  const targets = { overview: ".dash-main", messages: "#boardChat", chairman: "#chairmanControls", settings: "#accountSettings", documents: "#boardChat" };
+  if (view === "reports") return showBoardNotice("Reports will show shared room activity once messages have been created.");
+  if (view === "documents") {
+    document.querySelector("#messageFile")?.focus();
+    showBoardNotice("Choose a room, then attach an image or PDF to a message.");
+  }
+  document.querySelector(targets[view])?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function showBoardNotice(message) {

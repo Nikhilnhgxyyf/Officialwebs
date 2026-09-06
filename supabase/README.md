@@ -22,6 +22,10 @@ The frontend intentionally uses only the project URL and publishable/anon key. N
 
 If an email verification link opens `localhost:3000`, Supabase is using an old Site URL. Update the URL Configuration in step 2, then delete the unconfirmed user in **Authentication → Users** (or use Supabase's resend confirmation action) and register again. The browser now explicitly asks Supabase to return to the deployed site's current origin after confirmation.
 
+## Fixing room-creation RLS errors
+
+If the Board Portal says `new row violates row-level security policy for table "board_rooms"`, the signed-in profile is not marked as Chairman. Run `recover-chairman.sql` once in SQL Editor, confirm its final query returns `is_chairman = true`, then sign out and sign back in. The current frontend also attempts a one-time verified-Chairman bootstrap for Nikhil after the updated schema has been deployed.
+
 ## Next increment
 
 Expose Chairman room/member management controls. These features should be tested with two separate accounts before inviting the founding team.

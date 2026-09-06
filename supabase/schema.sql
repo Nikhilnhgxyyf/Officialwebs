@@ -61,6 +61,21 @@ returns boolean language sql stable security definer set search_path = public as
   select coalesce((select is_chairman from public.profiles where id = auth.uid()), false);
 $$;
 
+-- One-time bootstrap for the verified founding Chairman. This does not rely on
+-- a user-controlled role title and succeeds only when no Chairman exists yet.
+create function public.claim_initial_chairman()
+returns boolean language plpgsql security definer set search_path = public as $$
+begin
+  if auth.jwt() ->> 'email' <> 'niksonar07@gmail.com' then return false; end if;
+  if exists (select 1 from public.profiles where is_chairman) then return false; end if;
+  update public.profiles set full_name = 'Nikhil Sonar', role_title = 'Chairman', is_chairman = true where id = auth.uid();
+  return found;
+end;
+$$;
+
+revoke all on function public.claim_initial_chairman() from public;
+grant execute on function public.claim_initial_chairman() to authenticated;
+
 create function public.create_profile_for_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
