@@ -1391,6 +1391,30 @@ h1 {
       </section>
 
       <section class="panel glass">
+        <h3>Live operations</h3>
+        <div class="operations-feed" id="operationsFeed" aria-live="polite"></div>
+        <p class="manager-help">This activity feed records actual product and room changes made in this browser. It is stored locally and updates as changes happen.</p>
+      </section>
+
+      <section class="panel glass">
+        <div class="product-manager">
+          <div>
+            <div class="eyebrow">Chairman controls / products</div>
+            <h3>Product portfolio</h3>
+            <p class="manager-help">Only the Chairman control area can create, edit or remove products. Updates are saved locally and immediately reflected on the public products page.</p>
+            <div class="manager-list" id="managerProducts"></div>
+          </div>
+          <form id="productForm" onsubmit="saveProduct(event)">
+            <div class="field"><label>PRODUCT NAME</label><input id="productName" required placeholder="e.g. GEMA"></div>
+            <div class="field"><label>PRODUCT DESCRIPTION</label><textarea id="productDescription" required rows="4" placeholder="What does this product make possible?"></textarea></div>
+            <input id="editingProductId" type="hidden">
+            <button class="primary" type="submit">Save product</button>
+            <button class="secondary" type="button" onclick="resetProductForm()">Clear</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel glass">
         <div style="display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap">
           <h3>Rooms and sub-rooms</h3>
           <button class="secondary" onclick="createRoom()">+ Create room</button>
