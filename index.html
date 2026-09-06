@@ -907,6 +907,23 @@ h1 {
 .founder .avatar { margin-bottom:22px; }
 .founder h3 { font-size:23px; }
 .founder p { color:var(--muted); font-size:13px; margin-top:7px; }
+.chat-layout { display:grid; grid-template-columns:210px minmax(0,1fr); gap:18px; min-height:430px; }
+.room-list { display:grid; align-content:start; gap:8px; }
+.room-select { width:100%; border:1px solid var(--line); border-radius:12px; padding:12px; text-align:left; color:var(--white); background:rgba(255,255,255,.04); }
+.room-select.active { color:var(--ink); background:var(--cyan); }
+.chat-window { display:flex; flex-direction:column; min-height:420px; border:1px solid var(--line); border-radius:18px; background:rgba(2,13,27,.34); overflow:hidden; }
+.chat-heading { padding:18px 20px; border-bottom:1px solid var(--line); }
+.chat-heading h4 { font:600 20px "Space Grotesk",sans-serif; }
+.chat-messages { flex:1; display:grid; align-content:start; gap:13px; padding:20px; max-height:380px; overflow-y:auto; }
+.message { padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.07); }
+.message-meta { display:flex; gap:8px; align-items:center; color:var(--muted); font-size:11px; margin-bottom:6px; }
+.message-meta strong { color:var(--white); font-size:12px; }.message-role { color:var(--cyan); }.message p { color:#d9e9ee; font-size:13px; line-height:1.55; }
+.composer { display:grid; grid-template-columns:1fr auto; gap:10px; padding:14px; border-top:1px solid var(--line); }
+.attachment-picker { grid-column:1 / -1; color:var(--muted); font-size:12px; }
+.message-file { display:inline-block; margin-top:8px; color:var(--cyan); font-size:12px; }
+.composer textarea { min-height:48px; resize:vertical; }
+.chat-empty { color:var(--muted); font-size:13px; line-height:1.6; padding:10px 0; }
+.connection-status { font:11px "DM Mono",monospace; color:var(--cyan); margin-top:5px; }
 
 .notice {
   padding: 13px 15px;
@@ -996,6 +1013,7 @@ h1 {
   }
 
   .product-art { transform:scale(.78); transform-origin:bottom right; }
+  .chat-layout { grid-template-columns:1fr; }.room-list { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
 }
 
 @media (max-width: 520px) {
@@ -1177,11 +1195,18 @@ h1 {
     <div class="eyebrow">Restricted Access</div>
     <h2>Board Portal</h2>
     <p>
-      Your board workspace is stored on this device. Connect this portal to
-      your identity provider before using it for production access control.
+      Sign in to your shared Flamingo Group board workspace.
     </p>
 
     <form onsubmit="login(event)">
+      <div class="field">
+        <label>FULL NAME <span id="profileFieldsLabel">(NEW MEMBERS)</span></label>
+        <input id="fullName" type="text" placeholder="Your full name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label>COMPANY ROLE <span id="roleFieldsLabel">(NEW MEMBERS)</span></label>
+        <input id="roleTitle" type="text" placeholder="e.g. Founder or Co-founder">
+      </div>
       <div class="field">
         <label>EMAIL</label>
         <input id="email" type="email" placeholder="director@flamingogroup.com" required>
@@ -1193,8 +1218,9 @@ h1 {
       </div>
 
       <button class="primary" type="submit">Authenticate</button>
+      <label style="display:block;margin-top:14px;color:var(--muted);font-size:12px"><input id="createAccount" type="checkbox"> Create a new member account</label>
       <div class="notice" id="loginNotice">
-        Board workspace opened. Loading your private environment.
+        Connecting to the shared board workspace.
       </div>
     </form>
   </div>
@@ -1321,6 +1347,49 @@ h1 {
         </section>
       </div>
 
+      <section class="panel glass" id="boardChat">
+        <div style="display:flex;justify-content:space-between;gap:15px;align-items:start;flex-wrap:wrap">
+          <div><div class="eyebrow">Shared boardroom</div><h3 style="margin-bottom:4px">Founder conversation</h3><div class="connection-status" id="connectionStatus">CONNECTING TO SUPABASE</div></div>
+          <button class="secondary" type="button" onclick="loadSharedRooms()">Refresh rooms</button>
+        </div>
+        <div class="chat-layout" style="margin-top:20px">
+          <div class="room-list" id="sharedRooms"><p class="chat-empty">Loading rooms…</p></div>
+          <div class="chat-window">
+            <div class="chat-heading"><h4 id="activeRoomName">Choose a room</h4><p class="manager-help" id="activeRoomDescription">Only members of a room can read and post here.</p></div>
+            <div class="chat-messages" id="chatMessages"><p class="chat-empty">Select a shared room to see its conversation.</p></div>
+            <form class="composer" onsubmit="sendMessage(event)">
+              <textarea id="messageBody" aria-label="Message" placeholder="Write a message to this room…"></textarea>
+              <button class="primary" type="submit">Send</button>
+              <label class="attachment-picker">Attach image or PDF (max 10 MB) <input id="messageFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel glass">
+        <h3>Live operations</h3>
+        <div class="operations-feed" id="operationsFeed" aria-live="polite"></div>
+        <p class="manager-help">This activity feed records actual product and room changes made in this browser. It is stored locally and updates as changes happen.</p>
+      </section>
+
+      <section class="panel glass">
+        <div class="product-manager">
+          <div>
+            <div class="eyebrow">Chairman controls / products</div>
+            <h3>Product portfolio</h3>
+            <p class="manager-help">Only the Chairman control area can create, edit or remove products. Updates are saved locally and immediately reflected on the public products page.</p>
+            <div class="manager-list" id="managerProducts"></div>
+          </div>
+          <form id="productForm" onsubmit="saveProduct(event)">
+            <div class="field"><label>PRODUCT NAME</label><input id="productName" required placeholder="e.g. GEMA"></div>
+            <div class="field"><label>PRODUCT DESCRIPTION</label><textarea id="productDescription" required rows="4" placeholder="What does this product make possible?"></textarea></div>
+            <input id="editingProductId" type="hidden">
+            <button class="primary" type="submit">Save product</button>
+            <button class="secondary" type="button" onclick="resetProductForm()">Clear</button>
+          </form>
+        </div>
+      </section>
+
       <section class="panel glass">
         <h3>Live operations</h3>
         <div class="operations-feed" id="operationsFeed" aria-live="polite"></div>
@@ -1383,11 +1452,18 @@ h1 {
   </div>
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const loginModal = document.getElementById("loginModal");
 const publicSite = document.getElementById("publicSite");
 const publicNav = document.getElementById("publicNav");
 const dashboard = document.getElementById("dashboard");
+const SUPABASE_URL = "https://aorfeiwrevcpycderymv.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFvcmZlaXdyZXZjcHljZGVyeW12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2ODQ3MTAsImV4cCI6MjEwNDI2MDcxMH0.lkshC_hIjfZTIvxSfvS5T5snFRVFKdsoqJrwCWOkJDs";
+const supabaseClient = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let currentUser = null;
+let currentRoom = null;
+let roomSubscription = null;
 const defaultProducts = [
   { id: "argos", name: "Argos", description: "Generative optimisation for the moving world. Argos transforms fragmented signals into clear opportunities, helping teams analyse, generate, test and improve their most important systems.", capabilities: ["Signal discovery", "Generative strategy"], logo: "argos.png" },
   { id: "gema", name: "GEMA", description: "A new Flamingo Group product space. GEMA is being shaped for its next defining problem and will evolve from the Chairman's product portfolio.", capabilities: ["In development", "Future capability"], logo: "" }
@@ -1508,30 +1584,115 @@ function closeLogin() {
   loginModal.classList.remove("active");
 }
 
-function login(event) {
+async function login(event) {
   event.preventDefault();
-
   const notice = document.getElementById("loginNotice");
   notice.style.display = "block";
-
-  setTimeout(() => {
-    localStorage.setItem("flamingoBoardSession", "local-session");
-    loginModal.classList.remove("active");
-    publicSite.style.display = "none";
-    publicNav.style.display = "none";
-    document.querySelector(".footer").style.display = "none";
-    dashboard.classList.add("active");
-    window.scrollTo(0, 0);
-  }, 700);
+  if (!supabaseClient) { notice.textContent = "Supabase could not load. Check your internet connection and try again."; return; }
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const isSignup = document.getElementById("createAccount").checked;
+  const fullName = document.getElementById("fullName").value.trim();
+  const roleTitle = document.getElementById("roleTitle").value.trim();
+  let result;
+  if (isSignup) {
+    if (!fullName || !roleTitle) { notice.textContent = "New members must enter their full name and company role."; return; }
+    result = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: fullName, role_title: roleTitle } } });
+  } else {
+    result = await supabaseClient.auth.signInWithPassword({ email, password });
+  }
+  if (result.error) { notice.textContent = result.error.message; return; }
+  if (!result.data.session) { notice.textContent = "Check your email to confirm your account, then sign in."; return; }
+  await openBoardSession(result.data.user);
 }
 
-function logout() {
-  localStorage.removeItem("flamingoBoardSession");
+async function openBoardSession(user) {
+  currentUser = user;
+  loginModal.classList.remove("active");
+  publicSite.style.display = "none";
+  publicNav.style.display = "none";
+  document.querySelector(".footer").style.display = "none";
+  dashboard.classList.add("active");
+  window.scrollTo(0, 0);
+  await loadSharedRooms();
+}
+
+async function logout() {
+  if (roomSubscription) await supabaseClient.removeChannel(roomSubscription);
+  if (supabaseClient) await supabaseClient.auth.signOut();
+  currentUser = null; currentRoom = null;
   dashboard.classList.remove("active");
   publicSite.style.display = "block";
   publicNav.style.display = "flex";
   document.querySelector(".footer").style.display = "flex";
   window.scrollTo(0, 0);
+}
+
+async function loadSharedRooms() {
+  const list = document.getElementById("sharedRooms");
+  const status = document.getElementById("connectionStatus");
+  if (!supabaseClient || !currentUser) return;
+  list.innerHTML = '<p class="chat-empty">Loading your rooms…</p>';
+  const { data, error } = await supabaseClient.from("room_members").select("room_id, board_rooms(id,name,description)").eq("user_id", currentUser.id);
+  if (error) { status.textContent = "DATABASE SETUP REQUIRED"; list.innerHTML = `<p class="chat-empty">${escapeHtml(error.message)} Run the supplied Supabase SQL setup, then refresh.</p>`; return; }
+  const rooms = data.map(item => item.board_rooms).filter(Boolean);
+  status.textContent = "LIVE · SUPABASE CONNECTED";
+  list.innerHTML = rooms.length ? rooms.map(room => `<button class="room-select ${currentRoom?.id === room.id ? "active" : ""}" onclick="openSharedRoom('${room.id}')"><strong>${escapeHtml(room.name)}</strong><br><small>${escapeHtml(room.description || "Private Board room")}</small></button>`).join("") : '<p class="chat-empty">You are not a member of any rooms yet. Ask the Chairman to add you.</p>';
+  if (!currentRoom && rooms[0]) await openSharedRoom(rooms[0].id, rooms);
+}
+
+async function openSharedRoom(roomId, knownRooms) {
+  const rooms = knownRooms || [];
+  currentRoom = rooms.find(room => room.id === roomId) || currentRoom;
+  if (!currentRoom || currentRoom.id !== roomId) {
+    const { data } = await supabaseClient.from("board_rooms").select("id,name,description").eq("id", roomId).single();
+    currentRoom = data;
+  }
+  if (!currentRoom) return;
+  document.getElementById("activeRoomName").textContent = currentRoom.name;
+  document.getElementById("activeRoomDescription").textContent = currentRoom.description || "Private Board room";
+  await renderMessages();
+  if (roomSubscription) await supabaseClient.removeChannel(roomSubscription);
+  roomSubscription = supabaseClient.channel(`room:${roomId}`).on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `room_id=eq.${roomId}` }, () => renderMessages()).subscribe();
+  await loadSharedRooms();
+}
+
+async function renderMessages() {
+  if (!currentRoom) return;
+  const container = document.getElementById("chatMessages");
+  const { data, error } = await supabaseClient.from("messages").select("id,body,created_at,profiles(full_name,role_title),attachments(file_name,storage_path)").eq("room_id", currentRoom.id).order("created_at", { ascending: true });
+  if (error) { container.innerHTML = `<p class="chat-empty">${escapeHtml(error.message)}</p>`; return; }
+  const rendered = await Promise.all(data.map(async message => {
+    const attachment = message.attachments?.[0];
+    const { data: signed } = attachment ? await supabaseClient.storage.from("board-attachments").createSignedUrl(attachment.storage_path, 3600) : { data: null };
+    const fileLink = attachment ? `<a class="message-file" href="${signed?.signedUrl || "#"}" target="_blank" rel="noopener">Attachment: ${escapeHtml(attachment.file_name)}</a>` : "";
+    return `<article class="message"><div class="message-meta"><strong>${escapeHtml(message.profiles?.full_name || "Board member")}</strong><span class="message-role">${escapeHtml(message.profiles?.role_title || "Member")}</span><time>${new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time></div><p>${escapeHtml(message.body)}</p>${fileLink}</article>`;
+  }));
+  container.innerHTML = data.length ? rendered.join("") : '<p class="chat-empty">No messages yet. Start the conversation.</p>';
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendMessage(event) {
+  event.preventDefault();
+  if (!currentRoom || !currentUser) return showBoardNotice("Choose a shared room before sending a message.");
+  const input = document.getElementById("messageBody");
+  const body = input.value.trim();
+  const file = document.getElementById("messageFile").files[0];
+  if (!body && !file) return;
+  if (file && file.size > 10485760) return showBoardNotice("Attachments must be 10 MB or smaller.");
+  const { data: message, error } = await supabaseClient.from("messages").insert({ room_id: currentRoom.id, author_id: currentUser.id, body: body || "[Attachment]" }).select("id").single();
+  if (error) return showBoardNotice(error.message);
+  if (file) {
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const storagePath = `${currentRoom.id}/${message.id}/${safeName}`;
+    const { error: uploadError } = await supabaseClient.storage.from("board-attachments").upload(storagePath, file, { contentType: file.type, upsert: false });
+    if (uploadError) return showBoardNotice(`Message sent, but upload failed: ${uploadError.message}`);
+    const { error: attachmentError } = await supabaseClient.from("attachments").insert({ message_id: message.id, room_id: currentRoom.id, uploaded_by: currentUser.id, storage_path: storagePath, file_name: file.name, mime_type: file.type, file_size: file.size });
+    if (attachmentError) return showBoardNotice(`Message sent, but attachment metadata failed: ${attachmentError.message}`);
+  }
+  input.value = "";
+  document.getElementById("messageFile").value = "";
+  await renderMessages();
 }
 
 function showBoardNotice(message) {
@@ -1544,10 +1705,19 @@ function showBoardNotice(message) {
   }, 3500);
 }
 
-function createRoom() {
+async function createRoom() {
   const name = prompt("Enter the name of the new room:");
 
   if (!name || !name.trim()) return;
+
+  if (supabaseClient && currentUser) {
+    const { data: room, error } = await supabaseClient.from("board_rooms").insert({ name: name.trim(), description: "Private Board room", created_by: currentUser.id }).select("id").single();
+    if (error) return showBoardNotice(error.message);
+    const { error: memberError } = await supabaseClient.from("room_members").insert({ room_id: room.id, user_id: currentUser.id, added_by: currentUser.id });
+    if (memberError) return showBoardNotice(`Room was created, but membership failed: ${memberError.message}`);
+    await loadSharedRooms();
+    return showBoardNotice("Shared room created.");
+  }
 
   customRooms.push(name.trim());
   localStorage.setItem("flamingoCustomRooms", JSON.stringify(customRooms));
@@ -1571,11 +1741,8 @@ window.addEventListener("click", event => {
   }
 });
 
-if (localStorage.getItem("flamingoBoardSession")) {
-  publicSite.style.display = "none";
-  publicNav.style.display = "none";
-  document.querySelector(".footer").style.display = "none";
-  dashboard.classList.add("active");
+if (supabaseClient) {
+  supabaseClient.auth.getSession().then(({ data }) => { if (data.session?.user) openBoardSession(data.session.user); });
 }
 
 renderProducts();
