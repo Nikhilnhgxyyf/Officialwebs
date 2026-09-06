@@ -73,6 +73,12 @@ $$;
 create trigger on_auth_user_created after insert on auth.users
 for each row execute procedure public.create_profile_for_new_user();
 
+-- Backfill profiles for accounts created before this schema was installed.
+insert into public.profiles (id, full_name, role_title)
+select id, coalesce(raw_user_meta_data ->> 'full_name', 'Board member'), coalesce(raw_user_meta_data ->> 'role_title', 'Member')
+from auth.users
+on conflict (id) do nothing;
+
 create policy "members can read profiles" on public.profiles for select to authenticated using (true);
 create policy "members view their rooms" on public.board_rooms for select to authenticated using (public.is_room_member(id));
 create policy "chairman creates rooms" on public.board_rooms for insert to authenticated with check (public.is_chairman());

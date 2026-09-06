@@ -1440,6 +1440,7 @@ const supabaseClient = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON
 let currentUser = null;
 let currentRoom = null;
 let roomSubscription = null;
+let currentProfile = null;
 const defaultProducts = [
   { id: "argos", name: "Argos", description: "Generative optimisation for the moving world. Argos transforms fragmented signals into clear opportunities, helping teams analyse, generate, test and improve their most important systems.", capabilities: ["Signal discovery", "Generative strategy"], logo: "argos.png" },
   { id: "gema", name: "GEMA", description: "A new Flamingo Group product space. GEMA is being shaped for its next defining problem and will evolve from the Chairman's product portfolio.", capabilities: ["In development", "Future capability"], logo: "" }
@@ -1597,13 +1598,16 @@ async function openBoardSession(user) {
   document.querySelector(".footer").style.display = "none";
   dashboard.classList.add("active");
   window.scrollTo(0, 0);
+  const { data: profile, error } = await supabaseClient.from("profiles").select("full_name,role_title,is_chairman").eq("id", user.id).single();
+  currentProfile = profile;
+  if (error) showBoardNotice(`Board setup is incomplete: ${error.message}`);
   await loadSharedRooms();
 }
 
 async function logout() {
   if (roomSubscription) await supabaseClient.removeChannel(roomSubscription);
   if (supabaseClient) await supabaseClient.auth.signOut();
-  currentUser = null; currentRoom = null;
+  currentUser = null; currentRoom = null; currentProfile = null;
   dashboard.classList.remove("active");
   publicSite.style.display = "block";
   publicNav.style.display = "flex";
@@ -1618,10 +1622,32 @@ async function loadSharedRooms() {
   list.innerHTML = '<p class="chat-empty">Loading your rooms…</p>';
   const { data, error } = await supabaseClient.from("room_members").select("room_id, board_rooms(id,name,description)").eq("user_id", currentUser.id);
   if (error) { status.textContent = "DATABASE SETUP REQUIRED"; list.innerHTML = `<p class="chat-empty">${escapeHtml(error.message)} Run the supplied Supabase SQL setup, then refresh.</p>`; return; }
-  const rooms = data.map(item => item.board_rooms).filter(Boolean);
+  let rooms = data.map(item => item.board_rooms).filter(Boolean);
+  if (currentProfile?.is_chairman) {
+    const defaults = [
+      ["Chairman Room", "Strategy, governance and long-range decisions."],
+      ["Founders Room", "Origin story, product vision and founder correspondence."]
+    ];
+    for (const [name, description] of defaults) {
+      if (!rooms.some(room => room.name === name)) {
+        const { data: room, error: roomError } = await supabaseClient.from("board_rooms").insert({ name, description, created_by: currentUser.id }).select("id,name,description").single();
+        if (!roomError && room) {
+          const { error: memberError } = await supabaseClient.from("room_members").insert({ room_id: room.id, user_id: currentUser.id, added_by: currentUser.id });
+          if (!memberError) rooms.push(room);
+        }
+      }
+    }
+  }
   status.textContent = "LIVE · SUPABASE CONNECTED";
   list.innerHTML = rooms.length ? rooms.map(room => `<button class="room-select ${currentRoom?.id === room.id ? "active" : ""}" onclick="openSharedRoom('${room.id}')"><strong>${escapeHtml(room.name)}</strong><br><small>${escapeHtml(room.description || "Private Board room")}</small></button>`).join("") : '<p class="chat-empty">You are not a member of any rooms yet. Ask the Chairman to add you.</p>';
+  renderBoardRoomCards(rooms);
   if (!currentRoom && rooms[0]) await openSharedRoom(rooms[0].id, rooms);
+}
+
+function renderBoardRoomCards(sharedRooms) {
+  const rooms = document.getElementById("rooms");
+  if (!rooms || !currentUser) return;
+  rooms.innerHTML = sharedRooms.map((room, index) => `<article class="room glass" role="button" tabindex="0" onclick="openSharedRoom('${room.id}')" onkeydown="if(event.key === 'Enter') openSharedRoom('${room.id}')"><div class="number">SHARED ROOM / ${String(index + 1).padStart(2, "0")}</div><h4>${escapeHtml(room.name)}</h4><p>${escapeHtml(room.description || "Private Board room")}</p></article>`).join("") + (currentProfile?.is_chairman ? '<article class="room add-room" onclick="createRoom()"><div class="number">CHAIRMAN ACTION</div><h4>New room</h4><p>Create a shared Board room and become its first member.</p></article>' : "");
 }
 
 async function openSharedRoom(roomId, knownRooms) {
