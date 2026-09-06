@@ -73,6 +73,11 @@ body:after {
   z-index: -1;
 }
 
+.cosmos { position:fixed; inset:0; z-index:-3; overflow:hidden; pointer-events:none; background:radial-gradient(ellipse at 72% 24%, rgba(41,102,182,.22), transparent 27%), radial-gradient(ellipse at 20% 72%, rgba(93,42,125,.16), transparent 25%), #030b18; }
+.cosmos:before { content:""; position:absolute; inset:0; opacity:.72; background-image:radial-gradient(1px 1px at 7% 14%,#fff,transparent 2px),radial-gradient(1px 1px at 24% 36%,#fff,transparent 2px),radial-gradient(1.5px 1.5px at 61% 12%,#c5efff,transparent 3px),radial-gradient(1px 1px at 83% 45%,#fff,transparent 2px),radial-gradient(1.5px 1.5px at 45% 77%,#e4ccff,transparent 3px),radial-gradient(1px 1px at 91% 81%,#fff,transparent 2px); background-size:180px 180px,230px 230px,310px 310px,260px 260px,340px 340px,200px 200px; animation:starDrift 45s linear infinite; }
+.shooting-star { position:absolute; width:150px; height:1px; opacity:0; background:linear-gradient(90deg,transparent,#c8fbff,#fff); filter:drop-shadow(0 0 6px #7eeeff); transform:rotate(-27deg); animation:shoot 9s linear infinite; }
+.shooting-star.one { top:18%; left:60%; }.shooting-star.two { top:52%; left:12%; animation-delay:4.5s; }
+
 a {
   color: inherit;
   text-decoration: none;
@@ -133,6 +138,9 @@ button {
   transform: rotate(8deg);
   color: #fff;
 }
+
+.brand-logo { width: 44px; height: 44px; object-fit: contain; object-position:center; border-radius: 12px; background:rgba(255,255,255,.96); padding:3px; filter: drop-shadow(0 0 12px rgba(117,245,239,.26)); }
+.brand-fallback { width:44px; height:44px; display:grid; place-items:center; border-radius:12px; color:var(--ink); font-weight:800; background:linear-gradient(135deg,var(--cyan),var(--pink)); }
 
 .nav {
   display: flex;
@@ -405,6 +413,20 @@ h1 {
   grid-template-columns: 1.3fr .7fr;
   gap: 20px;
 }
+
+.product-tabs { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px; }
+.product-tab { border:1px solid var(--line); color:var(--muted); padding:12px 17px; border-radius:100px; background:rgba(255,255,255,.045); transition:.25s ease; }
+.product-tab:hover, .product-tab.active { color:var(--ink); background:var(--cyan); box-shadow:0 0 25px rgba(117,245,239,.22); }
+.product-logo { position:absolute; width:min(210px, 40%); right:6%; top:7%; object-fit:contain; opacity:1; border-radius:18px; background:rgba(255,255,255,.95); padding:8px; filter:drop-shadow(0 10px 18px rgba(0,0,0,.25)); }
+.product-logo-fallback { position:absolute; right:7%; top:9%; color:var(--ink); padding:15px 19px; border-radius:16px; font:700 24px "Space Grotesk",sans-serif; background:linear-gradient(135deg,var(--cyan),var(--pink)); box-shadow:0 12px 30px rgba(0,0,0,.2); }
+.product-art { position:absolute; right:7%; bottom:8%; width:230px; height:210px; pointer-events:none; }
+.product-art span { position:absolute; display:block; }
+.product-art--argos span { inset:26px; border:1px solid rgba(117,245,239,.7); border-radius:50%; box-shadow:0 0 28px rgba(117,245,239,.4), inset 0 0 30px rgba(103,153,255,.28); animation:spin3d 8s linear infinite; }
+.product-art--argos span:nth-child(2) { inset:55px 0; border-color:rgba(245,139,196,.7); animation-direction:reverse; animation-duration:5s; }
+.product-art--gema { background:conic-gradient(from 20deg, transparent, rgba(117,245,239,.85), transparent, rgba(245,139,196,.8), transparent); border-radius:50%; filter:drop-shadow(0 0 32px rgba(103,153,255,.7)); animation:spin3d 11s linear infinite; }
+.product-art--gema:after { content:""; position:absolute; inset:35px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#fff 0 3%,var(--pink) 7%,var(--blue) 38%,#091525 72%); box-shadow:inset -20px -20px 40px rgba(0,0,0,.4); }
+.product-art--new { transform-style:preserve-3d; animation:floatCube 6s ease-in-out infinite; }
+.product-art--new span { width:120px; height:120px; left:45px; top:35px; background:linear-gradient(135deg,rgba(117,245,239,.75),rgba(103,153,255,.15),rgba(245,139,196,.6)); border:1px solid rgba(255,255,255,.6); transform:rotate(45deg); box-shadow:0 0 45px rgba(117,245,239,.35); }
 
 .product-card {
   min-height: 490px;
@@ -871,6 +893,21 @@ h1 {
   color: white;
 }
 
+.operations-feed { display:grid; gap:11px; }
+.operation-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.08); font-size:13px; }
+.operation-dot { width:9px; height:9px; border-radius:50%; background:var(--cyan); box-shadow:0 0 14px var(--cyan); }
+.operation-row time { margin-left:auto; color:var(--muted); font:10px "DM Mono", monospace; }
+.product-manager { display:grid; grid-template-columns:1fr .8fr; gap:20px; }
+.manager-list { display:grid; gap:9px; margin-top:16px; }
+.manager-item { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:13px; border:1px solid var(--line); border-radius:13px; background:rgba(255,255,255,.035); }
+.manager-item button { border:0; border-radius:8px; padding:7px 9px; color:#ffd2e8; background:rgba(245,139,196,.14); }
+.manager-help { color:var(--muted); font-size:13px; line-height:1.65; margin-top:10px; }
+.founders { display:grid; grid-template-columns:repeat(3,1fr); gap:17px; }
+.founder { padding:25px; border-radius:24px; min-height:180px; }
+.founder .avatar { margin-bottom:22px; }
+.founder h3 { font-size:23px; }
+.founder p { color:var(--muted); font-size:13px; margin-top:7px; }
+
 .notice {
   padding: 13px 15px;
   border-radius: 12px;
@@ -891,6 +928,17 @@ h1 {
   to { transform: rotateX(66deg) rotateZ(374deg); }
 }
 
+@keyframes pulse { 50% { transform:scale(1.08); opacity:.72; } }
+@keyframes starDrift { to { transform:translate3d(-90px,45px,0); } }
+@keyframes shoot { 0%,72% { transform:translate3d(0,0,0) rotate(-27deg); opacity:0; } 74% { opacity:1; } 83%,100% { transform:translate3d(-420px,220px,0) rotate(-27deg); opacity:0; } }
+@keyframes spin3d { to { transform:rotate(360deg) rotateX(28deg); } }
+@keyframes floatCube { 50% { transform:translateY(-20px) rotateY(18deg); } }
+
+@media (max-width: 1100px) {
+  .product-grid, .product-manager, .dash-panels { grid-template-columns: 1fr; }
+  .founders { grid-template-columns: repeat(3, 1fr); }
+}
+
 @media (max-width: 850px) {
   .nav {
     display: none;
@@ -909,12 +957,8 @@ h1 {
     min-height: 380px;
   }
 
-  .product-grid,
-  .dash-panels {
-    grid-template-columns: 1fr;
-  }
-
   .principles,
+  .founders,
   .rooms {
     grid-template-columns: 1fr;
   }
@@ -950,6 +994,8 @@ h1 {
     display: block;
     line-height: 2;
   }
+
+  .product-art { transform:scale(.78); transform-origin:bottom right; }
 }
 
 @media (max-width: 520px) {
@@ -997,16 +1043,17 @@ h1 {
 </head>
 
 <body>
+<div class="cosmos" aria-hidden="true"><span class="shooting-star one"></span><span class="shooting-star two"></span></div>
 
 <header class="topbar" id="publicNav">
   <a class="brand" href="#home">
-    <span class="brand-mark"></span>
+    <img class="brand-logo" src="flamingo-group.png" alt="Flamingo Group logo" onerror="this.replaceWith(Object.assign(document.createElement('span'), { className: 'brand-fallback', textContent: 'FG', ariaLabel: 'Flamingo Group' }))">
     <span>FLAMINGO GROUP</span>
   </a>
 
   <nav class="nav">
     <a href="#company">Company</a>
-    <a href="#argos">Argos</a>
+    <a href="#products">Our Products</a>
     <a href="#principles">Principles</a>
     <a href="#board">Board Access</a>
   </nav>
@@ -1028,7 +1075,7 @@ h1 {
       decisions and discovery move at machine speed.
     </p>
     <div class="actions">
-      <a href="#argos" class="primary">Explore Argos</a>
+      <a href="#products" class="primary">Our products</a>
       <a href="#company" class="secondary">Our point of view</a>
     </div>
   </div>
@@ -1044,17 +1091,6 @@ h1 {
       </div>
     </div>
 
-    <div class="float-card card-a">
-      LIVE SIGNAL
-      <strong>+84.7%</strong>
-      <span>discovery efficiency</span>
-    </div>
-
-    <div class="float-card card-b">
-      ENGINE STATUS
-      <strong>OPTIMAL</strong>
-      <span>all systems aligned</span>
-    </div>
   </div>
 </section>
 
@@ -1070,7 +1106,7 @@ h1 {
     </p>
   </div>
 
-  <div class="principles">
+  <div class="principles" id="principles">
     <article class="principle glass">
       <div class="glow-icon">01</div>
       <h3>See deeper.</h3>
@@ -1091,53 +1127,34 @@ h1 {
   </div>
 </section>
 
-<section class="section" id="argos">
+<section class="section" id="products">
   <div class="section-header">
     <div>
-      <div class="eyebrow">02 / Flagship Product</div>
-      <h2>Meet Argos.</h2>
+      <div class="eyebrow">02 / Products</div>
+      <h2>Built to create momentum.</h2>
     </div>
     <p class="section-intro">
-      A generative optimisation engine for organisations that want to understand
-      what matters, generate better decisions and continuously improve.
+      Explore the Flamingo Group product suite. Product availability and
+      content are managed in the Board Portal by the Chairman.
     </p>
   </div>
 
-  <div class="product-grid">
-    <article class="product-card product-main glass">
-      <div class="eyebrow">ARGOS / GOE-01</div>
-      <h3>Generative optimisation for the moving world.</h3>
-      <p>
-        Argos transforms fragmented signals into clear opportunities.
-        It analyses, generates, tests and optimises strategies across your
-        organisation's most important systems.
-      </p>
+  <div class="product-tabs" id="productTabs" aria-label="Products"></div>
+  <div class="product-grid" id="productDisplay"></div>
+</section>
 
-      <div class="signal">
-        <span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span>
-      </div>
-    </article>
-
-    <div class="side-stack">
-      <article class="small-card glass">
-        <div class="number">CAPABILITY / 001</div>
-        <h3>Signal discovery</h3>
-        <p>Identify the patterns your current tools are not seeing.</p>
-      </article>
-
-      <article class="small-card glass">
-        <div class="number">CAPABILITY / 002</div>
-        <h3>Generative strategy</h3>
-        <p>Generate high-quality options from live organisational context.</p>
-      </article>
-    </div>
+<section class="section" id="founding-team">
+  <div class="section-header"><div><div class="eyebrow">03 / Founding team</div><h2>The people behind the group.</h2></div><p class="section-intro">A focused founding team building Flamingo Group with clarity, care and conviction.</p></div>
+  <div class="founders">
+    <article class="founder glass"><div class="avatar">N</div><h3>Nikhil Sonar</h3><p>Founder</p></article>
+    <article class="founder glass"><div class="avatar">T</div><h3>Tushar Ahire</h3><p>Co-founder</p></article>
+    <article class="founder glass"><div class="avatar">D</div><h3>Devashish Swami</h3><p>Co-founder</p></article>
   </div>
 </section>
 
 <section class="section board-section" id="board">
   <div class="board-entry glass">
-    <div class="eyebrow">03 / Private Infrastructure</div>
+    <div class="eyebrow">04 / Private Infrastructure</div>
     <h2>The boardroom, reimagined.</h2>
     <p>
       A secure operating environment for directors, founders and leadership teams
@@ -1160,8 +1177,8 @@ h1 {
     <div class="eyebrow">Restricted Access</div>
     <h2>Board Portal</h2>
     <p>
-      This prototype uses demo authentication. Real production access control
-      should be connected to a secure backend.
+      Your board workspace is stored on this device. Connect this portal to
+      your identity provider before using it for production access control.
     </p>
 
     <form onsubmit="login(event)">
@@ -1177,7 +1194,7 @@ h1 {
 
       <button class="primary" type="submit">Authenticate</button>
       <div class="notice" id="loginNotice">
-        Demo access granted. Opening secure board environment.
+        Board workspace opened. Loading your private environment.
       </div>
     </form>
   </div>
@@ -1199,37 +1216,39 @@ h1 {
       <button>Messages</button>
       <button>Reports</button>
       <button>Documents</button>
+      <button>Chairman controls</button>
       <button>Settings</button>
     </aside>
 
     <div class="dash-main">
       <div class="stats">
         <div class="stat glass">
-          <small>VISITORS / 30 DAYS</small>
-          <strong>18.4K</strong>
+          <small>PORTFOLIO PRODUCTS</small>
+          <strong id="productMetric">02</strong>
         </div>
 
         <div class="stat glass">
-          <small>ACTIVE DIRECTORS</small>
-          <strong>08</strong>
+          <small>BOARD ROOMS</small>
+          <strong id="roomMetric">02</strong>
         </div>
 
         <div class="stat glass">
-          <small>OPEN INITIATIVES</small>
-          <strong>24</strong>
+          <small>RECORDED UPDATES</small>
+          <strong id="updateMetric">00</strong>
         </div>
 
         <div class="stat glass">
-          <small>AVG. DELIVERY</small>
-          <strong>87%</strong>
+          <small>DATA LOCATION</small>
+          <strong style="font-size:18px">LOCAL</strong>
         </div>
       </div>
 
       <div class="dash-panels">
         <section class="panel glass">
-          <h3>Visitor intelligence</h3>
+          <h3>Workspace activity</h3>
 
-          <div class="chart">
+          <p class="manager-help">This space intentionally shows only data created in this board workspace. Visitor analytics and delivery metrics will appear here after a secure analytics and operations integration is connected.</p>
+          <div class="chart" id="activityChart" aria-label="Local workspace activity visualisation">
             <div style="height:42%; flex:1">
               <div class="bar" style="height:100%"></div>
               <div class="bar-label">01</div>
@@ -1262,45 +1281,69 @@ h1 {
         </section>
 
         <section class="panel glass">
-          <h3>Board delivery</h3>
+          <h3>Data integrity</h3>
 
           <div class="person">
             <div class="avatar">A</div>
             <div class="person-info">
-              <strong>Chairman</strong>
-              <small>Strategic review</small>
+              <strong>Chairman controls</strong>
+              <small>Product portfolio changes</small>
             </div>
-            <div class="progress"><span style="width:94%"></span></div>
+            <div class="progress"><span id="productProgress" style="width:0%"></span></div>
           </div>
 
           <div class="person">
             <div class="avatar">F</div>
             <div class="person-info">
-              <strong>Founders</strong>
-              <small>Product direction</small>
+              <strong>Board rooms</strong>
+              <small>Persisted on this device</small>
             </div>
-            <div class="progress"><span style="width:81%"></span></div>
+            <div class="progress"><span id="roomProgress" style="width:0%"></span></div>
           </div>
 
           <div class="person">
             <div class="avatar">C</div>
             <div class="person-info">
-              <strong>CEO Office</strong>
-              <small>Operating plan</small>
+              <strong>Activity log</strong>
+              <small>Timestamped local changes</small>
             </div>
-            <div class="progress"><span style="width:76%"></span></div>
+            <div class="progress"><span id="updateProgress" style="width:0%"></span></div>
           </div>
 
           <div class="person">
             <div class="avatar">O</div>
             <div class="person-info">
-              <strong>Operations</strong>
-              <small>Execution system</small>
+              <strong>External data</strong>
+              <small>Not connected yet</small>
             </div>
-            <div class="progress"><span style="width:89%"></span></div>
+            <div class="progress"><span style="width:0%"></span></div>
           </div>
         </section>
       </div>
+
+      <section class="panel glass">
+        <h3>Live operations</h3>
+        <div class="operations-feed" id="operationsFeed" aria-live="polite"></div>
+        <p class="manager-help">This activity feed records actual product and room changes made in this browser. It is stored locally and updates as changes happen.</p>
+      </section>
+
+      <section class="panel glass">
+        <div class="product-manager">
+          <div>
+            <div class="eyebrow">Chairman controls / products</div>
+            <h3>Product portfolio</h3>
+            <p class="manager-help">Only the Chairman control area can create, edit or remove products. Updates are saved locally and immediately reflected on the public products page.</p>
+            <div class="manager-list" id="managerProducts"></div>
+          </div>
+          <form id="productForm" onsubmit="saveProduct(event)">
+            <div class="field"><label>PRODUCT NAME</label><input id="productName" required placeholder="e.g. GEMA"></div>
+            <div class="field"><label>PRODUCT DESCRIPTION</label><textarea id="productDescription" required rows="4" placeholder="What does this product make possible?"></textarea></div>
+            <input id="editingProductId" type="hidden">
+            <button class="primary" type="submit">Save product</button>
+            <button class="secondary" type="button" onclick="resetProductForm()">Clear</button>
+          </form>
+        </div>
+      </section>
 
       <section class="panel glass">
         <div style="display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap">
@@ -1345,6 +1388,117 @@ const loginModal = document.getElementById("loginModal");
 const publicSite = document.getElementById("publicSite");
 const publicNav = document.getElementById("publicNav");
 const dashboard = document.getElementById("dashboard");
+const defaultProducts = [
+  { id: "argos", name: "Argos", description: "Generative optimisation for the moving world. Argos transforms fragmented signals into clear opportunities, helping teams analyse, generate, test and improve their most important systems.", capabilities: ["Signal discovery", "Generative strategy"], logo: "argos.png" },
+  { id: "gema", name: "GEMA", description: "A new Flamingo Group product space. GEMA is being shaped for its next defining problem and will evolve from the Chairman's product portfolio.", capabilities: ["In development", "Future capability"], logo: "" }
+];
+let products = loadProducts();
+let operations = loadStoredArray("flamingoOperations");
+let customRooms = loadStoredArray("flamingoCustomRooms");
+
+function loadStoredArray(key) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch { return []; }
+}
+
+function loadProducts() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("flamingoProducts"));
+    return Array.isArray(saved) && saved.length ? saved : defaultProducts;
+  } catch { return defaultProducts; }
+}
+
+function persistProducts() {
+  localStorage.setItem("flamingoProducts", JSON.stringify(products));
+}
+
+function recordOperation(message) {
+  operations.unshift({ message, time: new Date().toISOString() });
+  operations = operations.slice(0, 8);
+  localStorage.setItem("flamingoOperations", JSON.stringify(operations));
+  renderOperations();
+  renderBoardMetrics();
+}
+
+function renderBoardMetrics() {
+  const metrics = [
+    ["productMetric", products.length], ["roomMetric", customRooms.length + 2], ["updateMetric", operations.length]
+  ];
+  metrics.forEach(([id, value]) => { const element = document.getElementById(id); if (element) element.textContent = String(value).padStart(2, "0"); });
+  const progress = [["productProgress", products.length], ["roomProgress", customRooms.length + 2], ["updateProgress", operations.length]];
+  progress.forEach(([id, value]) => { const element = document.getElementById(id); if (element) element.style.width = `${Math.min(value * 20, 100)}%`; });
+  const chart = document.getElementById("activityChart");
+  if (chart) chart.innerHTML = `<div class="manager-help">${operations.length ? `${operations.length} recorded board update${operations.length === 1 ? "" : "s"} in this local workspace.` : "No board updates have been recorded yet."}</div>`;
+}
+
+function renderOperations() {
+  const feed = document.getElementById("operationsFeed");
+  if (!feed) return;
+  feed.innerHTML = operations.length ? operations.map(item => `<div class="operation-row"><span class="operation-dot"></span><span>${escapeHtml(item.message)}</span><time>${new Date(item.time).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</time></div>`).join("") : '<div class="operation-row"><span class="operation-dot"></span><span>Board workspace ready for activity.</span><time>NOW</time></div>';
+}
+
+function renderProducts(activeId = products[0]?.id) {
+  const tabs = document.getElementById("productTabs");
+  const display = document.getElementById("productDisplay");
+  if (!tabs || !display) return;
+  const active = products.find(product => product.id === activeId) || products[0];
+  tabs.innerHTML = products.map(product => `<button class="product-tab ${product.id === active.id ? "active" : ""}" onclick="renderProducts('${product.id}')">${escapeHtml(product.name)}</button>`).join("");
+  const artType = active.id === "argos" ? "argos" : active.id === "gema" ? "gema" : "new";
+  const visual = active.logo ? `<img class="product-logo" src="${active.logo}" alt="${escapeHtml(active.name)} logo" onerror="this.replaceWith(Object.assign(document.createElement('span'), { className: 'product-logo-fallback', textContent: '${escapeHtml(active.name)}' }))"><div class="product-art product-art--argos" aria-hidden="true"><span></span><span></span></div>` : `<div class="product-art product-art--${artType}" aria-hidden="true"><span></span><span></span></div>`;
+  display.innerHTML = `<article class="product-card product-main glass"><div class="eyebrow">${escapeHtml(active.name).toUpperCase()} / FLAMINGO GROUP</div><h3>${escapeHtml(active.name)} for a moving world.</h3><p>${escapeHtml(active.description)}</p>${visual}</article><div class="side-stack">${active.capabilities.map((capability, index) => `<article class="small-card glass"><div class="number">CAPABILITY / ${String(index + 1).padStart(3, "0")}</div><h3>${escapeHtml(capability)}</h3><p>${index === 0 ? "Designed to bring clarity to the work that matters most." : "A focused product capability shaped by the Flamingo Group portfolio."}</p></article>`).join("")}</div>`;
+}
+
+function renderProductManager() {
+  const manager = document.getElementById("managerProducts");
+  if (!manager) return;
+  manager.innerHTML = products.map(product => `<div class="manager-item"><span>${escapeHtml(product.name)}</span><span><button type="button" onclick="editProduct('${product.id}')">Edit</button> <button type="button" onclick="deleteProduct('${product.id}')">Remove</button></span></div>`).join("");
+}
+
+function saveProduct(event) {
+  event.preventDefault();
+  const id = document.getElementById("editingProductId").value;
+  const name = document.getElementById("productName").value.trim();
+  const description = document.getElementById("productDescription").value.trim();
+  if (!name || !description) return;
+  if (id) {
+    const product = products.find(item => item.id === id);
+    product.name = name; product.description = description;
+    recordOperation(`${name} product updated by Chairman controls.`);
+  } else {
+    products.push({ id: `product-${Date.now()}`, name, description, capabilities: ["Core capability", "Portfolio capability"], logo: "" });
+    recordOperation(`${name} product created by Chairman controls.`);
+  }
+  persistProducts(); renderProducts(id || products.at(-1).id); renderProductManager(); renderBoardMetrics(); resetProductForm();
+}
+
+function editProduct(id) {
+  const product = products.find(item => item.id === id);
+  document.getElementById("editingProductId").value = product.id;
+  document.getElementById("productName").value = product.name;
+  document.getElementById("productDescription").value = product.description;
+  document.getElementById("productName").focus();
+}
+
+function deleteProduct(id) {
+  if (products.length === 1) return showBoardNotice("Keep at least one product in the portfolio.");
+  const product = products.find(item => item.id === id);
+  products = products.filter(item => item.id !== id); persistProducts(); renderProducts(); renderProductManager(); renderBoardMetrics();
+  recordOperation(`${product.name} product removed by Chairman controls.`);
+}
+
+function resetProductForm() { document.getElementById("productForm").reset(); document.getElementById("editingProductId").value = ""; }
+
+function renderRooms() {
+  const rooms = document.getElementById("rooms");
+  if (!rooms) return;
+  const baseRooms = [
+    { number: "PRIVATE ROOM / 01", name: "Chairman Room", detail: "Strategy, governance and long-range decisions." },
+    { number: "PRIVATE ROOM / 02", name: "Founders Room", detail: "Origin story, product vision and founder correspondence." }
+  ];
+  rooms.innerHTML = [...baseRooms, ...customRooms.map(name => ({ number: "CUSTOM ROOM", name, detail: "Private board room ready for configuration." }))].map(room => `<article class="room glass"><div class="number">${room.number}</div><h4>${escapeHtml(room.name)}</h4><p>${room.detail}</p></article>`).join("") + '<article class="room add-room" onclick="createRoom()"><div class="number">SYSTEM ACTION</div><h4>New room</h4><p>Create a new board room or sub-room.</p></article>';
+}
 
 function openLogin() {
   loginModal.classList.add("active");
@@ -1361,7 +1515,7 @@ function login(event) {
   notice.style.display = "block";
 
   setTimeout(() => {
-    localStorage.setItem("flamingoBoardSession", "demo-session");
+    localStorage.setItem("flamingoBoardSession", "local-session");
     loginModal.classList.remove("active");
     publicSite.style.display = "none";
     publicNav.style.display = "none";
@@ -1395,20 +1549,11 @@ function createRoom() {
 
   if (!name || !name.trim()) return;
 
-  const room = document.createElement("article");
-  room.className = "room glass";
-  room.innerHTML = `
-    <div class="number">CUSTOM ROOM</div>
-    <h4>${escapeHtml(name.trim())}</h4>
-    <p>New private board room ready for configuration.</p>
-  `;
-
-  document.getElementById("rooms").insertBefore(
-    room,
-    document.querySelector(".add-room")
-  );
-
-  showBoardNotice("Room created in this local demo.");
+  customRooms.push(name.trim());
+  localStorage.setItem("flamingoCustomRooms", JSON.stringify(customRooms));
+  renderRooms();
+  showBoardNotice("Room created and recorded in this board workspace.");
+  recordOperation(`${name.trim()} room created.`);
 }
 
 function escapeHtml(value) {
@@ -1432,6 +1577,12 @@ if (localStorage.getItem("flamingoBoardSession")) {
   document.querySelector(".footer").style.display = "none";
   dashboard.classList.add("active");
 }
+
+renderProducts();
+renderProductManager();
+renderOperations();
+renderRooms();
+renderBoardMetrics();
 </script>
 
 </body>
