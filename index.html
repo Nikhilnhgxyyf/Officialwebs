@@ -73,6 +73,11 @@ body:after {
   z-index: -1;
 }
 
+.cosmos { position:fixed; inset:0; z-index:-3; overflow:hidden; pointer-events:none; background:radial-gradient(ellipse at 72% 24%, rgba(41,102,182,.22), transparent 27%), radial-gradient(ellipse at 20% 72%, rgba(93,42,125,.16), transparent 25%), #030b18; }
+.cosmos:before { content:""; position:absolute; inset:0; opacity:.72; background-image:radial-gradient(1px 1px at 7% 14%,#fff,transparent 2px),radial-gradient(1px 1px at 24% 36%,#fff,transparent 2px),radial-gradient(1.5px 1.5px at 61% 12%,#c5efff,transparent 3px),radial-gradient(1px 1px at 83% 45%,#fff,transparent 2px),radial-gradient(1.5px 1.5px at 45% 77%,#e4ccff,transparent 3px),radial-gradient(1px 1px at 91% 81%,#fff,transparent 2px); background-size:180px 180px,230px 230px,310px 310px,260px 260px,340px 340px,200px 200px; animation:starDrift 45s linear infinite; }
+.shooting-star { position:absolute; width:150px; height:1px; opacity:0; background:linear-gradient(90deg,transparent,#c8fbff,#fff); filter:drop-shadow(0 0 6px #7eeeff); transform:rotate(-27deg); animation:shoot 9s linear infinite; }
+.shooting-star.one { top:18%; left:60%; }.shooting-star.two { top:52%; left:12%; animation-delay:4.5s; }
+
 a {
   color: inherit;
   text-decoration: none;
@@ -134,7 +139,8 @@ button {
   color: #fff;
 }
 
-.brand-logo { width: 39px; height: 39px; object-fit: contain; border-radius: 12px; filter: drop-shadow(0 0 12px rgba(117,245,239,.26)); }
+.brand-logo { width: 44px; height: 44px; object-fit: contain; object-position:center; border-radius: 12px; background:rgba(255,255,255,.96); padding:3px; filter: drop-shadow(0 0 12px rgba(117,245,239,.26)); }
+.brand-fallback { width:44px; height:44px; display:grid; place-items:center; border-radius:12px; color:var(--ink); font-weight:800; background:linear-gradient(135deg,var(--cyan),var(--pink)); }
 
 .nav {
   display: flex;
@@ -411,8 +417,16 @@ h1 {
 .product-tabs { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px; }
 .product-tab { border:1px solid var(--line); color:var(--muted); padding:12px 17px; border-radius:100px; background:rgba(255,255,255,.045); transition:.25s ease; }
 .product-tab:hover, .product-tab.active { color:var(--ink); background:var(--cyan); box-shadow:0 0 25px rgba(117,245,239,.22); }
-.product-logo { position:absolute; width:min(180px, 38%); right:7%; top:8%; object-fit:contain; opacity:.9; filter:drop-shadow(0 10px 18px rgba(0,0,0,.25)); }
-.gema-orb { position:absolute; right:10%; bottom:11%; width:210px; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff, var(--pink) 8%, var(--blue) 35%, transparent 67%); box-shadow:0 0 70px rgba(103,153,255,.4); animation:pulse 5s ease-in-out infinite; }
+.product-logo { position:absolute; width:min(210px, 40%); right:6%; top:7%; object-fit:contain; opacity:1; border-radius:18px; background:rgba(255,255,255,.95); padding:8px; filter:drop-shadow(0 10px 18px rgba(0,0,0,.25)); }
+.product-logo-fallback { position:absolute; right:7%; top:9%; color:var(--ink); padding:15px 19px; border-radius:16px; font:700 24px "Space Grotesk",sans-serif; background:linear-gradient(135deg,var(--cyan),var(--pink)); box-shadow:0 12px 30px rgba(0,0,0,.2); }
+.product-art { position:absolute; right:7%; bottom:8%; width:230px; height:210px; pointer-events:none; }
+.product-art span { position:absolute; display:block; }
+.product-art--argos span { inset:26px; border:1px solid rgba(117,245,239,.7); border-radius:50%; box-shadow:0 0 28px rgba(117,245,239,.4), inset 0 0 30px rgba(103,153,255,.28); animation:spin3d 8s linear infinite; }
+.product-art--argos span:nth-child(2) { inset:55px 0; border-color:rgba(245,139,196,.7); animation-direction:reverse; animation-duration:5s; }
+.product-art--gema { background:conic-gradient(from 20deg, transparent, rgba(117,245,239,.85), transparent, rgba(245,139,196,.8), transparent); border-radius:50%; filter:drop-shadow(0 0 32px rgba(103,153,255,.7)); animation:spin3d 11s linear infinite; }
+.product-art--gema:after { content:""; position:absolute; inset:35px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#fff 0 3%,var(--pink) 7%,var(--blue) 38%,#091525 72%); box-shadow:inset -20px -20px 40px rgba(0,0,0,.4); }
+.product-art--new { transform-style:preserve-3d; animation:floatCube 6s ease-in-out infinite; }
+.product-art--new span { width:120px; height:120px; left:45px; top:35px; background:linear-gradient(135deg,rgba(117,245,239,.75),rgba(103,153,255,.15),rgba(245,139,196,.6)); border:1px solid rgba(255,255,255,.6); transform:rotate(45deg); box-shadow:0 0 45px rgba(117,245,239,.35); }
 
 .product-card {
   min-height: 490px;
@@ -915,6 +929,15 @@ h1 {
 }
 
 @keyframes pulse { 50% { transform:scale(1.08); opacity:.72; } }
+@keyframes starDrift { to { transform:translate3d(-90px,45px,0); } }
+@keyframes shoot { 0%,72% { transform:translate3d(0,0,0) rotate(-27deg); opacity:0; } 74% { opacity:1; } 83%,100% { transform:translate3d(-420px,220px,0) rotate(-27deg); opacity:0; } }
+@keyframes spin3d { to { transform:rotate(360deg) rotateX(28deg); } }
+@keyframes floatCube { 50% { transform:translateY(-20px) rotateY(18deg); } }
+
+@media (max-width: 1100px) {
+  .product-grid, .product-manager, .dash-panels { grid-template-columns: 1fr; }
+  .founders { grid-template-columns: repeat(3, 1fr); }
+}
 
 @media (max-width: 850px) {
   .nav {
@@ -932,12 +955,6 @@ h1 {
 
   .hero-visual {
     min-height: 380px;
-  }
-
-  .product-grid,
-  .product-manager,
-  .dash-panels {
-    grid-template-columns: 1fr;
   }
 
   .principles,
@@ -977,6 +994,8 @@ h1 {
     display: block;
     line-height: 2;
   }
+
+  .product-art { transform:scale(.78); transform-origin:bottom right; }
 }
 
 @media (max-width: 520px) {
@@ -1024,10 +1043,11 @@ h1 {
 </head>
 
 <body>
+<div class="cosmos" aria-hidden="true"><span class="shooting-star one"></span><span class="shooting-star two"></span></div>
 
 <header class="topbar" id="publicNav">
   <a class="brand" href="#home">
-    <img class="brand-logo" src="flamingo-group.png" alt="Flamingo Group logo">
+    <img class="brand-logo" src="flamingo-group.png" alt="Flamingo Group logo" onerror="this.replaceWith(Object.assign(document.createElement('span'), { className: 'brand-fallback', textContent: 'FG', ariaLabel: 'Flamingo Group' }))">
     <span>FLAMINGO GROUP</span>
   </a>
 
@@ -1203,31 +1223,32 @@ h1 {
     <div class="dash-main">
       <div class="stats">
         <div class="stat glass">
-          <small>VISITORS / 30 DAYS</small>
-          <strong>18.4K</strong>
+          <small>PORTFOLIO PRODUCTS</small>
+          <strong id="productMetric">02</strong>
         </div>
 
         <div class="stat glass">
-          <small>ACTIVE DIRECTORS</small>
-          <strong>08</strong>
+          <small>BOARD ROOMS</small>
+          <strong id="roomMetric">02</strong>
         </div>
 
         <div class="stat glass">
-          <small>OPEN INITIATIVES</small>
-          <strong>24</strong>
+          <small>RECORDED UPDATES</small>
+          <strong id="updateMetric">00</strong>
         </div>
 
         <div class="stat glass">
-          <small>AVG. DELIVERY</small>
-          <strong>87%</strong>
+          <small>DATA LOCATION</small>
+          <strong style="font-size:18px">LOCAL</strong>
         </div>
       </div>
 
       <div class="dash-panels">
         <section class="panel glass">
-          <h3>Visitor intelligence</h3>
+          <h3>Workspace activity</h3>
 
-          <div class="chart">
+          <p class="manager-help">This space intentionally shows only data created in this board workspace. Visitor analytics and delivery metrics will appear here after a secure analytics and operations integration is connected.</p>
+          <div class="chart" id="activityChart" aria-label="Local workspace activity visualisation">
             <div style="height:42%; flex:1">
               <div class="bar" style="height:100%"></div>
               <div class="bar-label">01</div>
@@ -1260,42 +1281,42 @@ h1 {
         </section>
 
         <section class="panel glass">
-          <h3>Board delivery</h3>
+          <h3>Data integrity</h3>
 
           <div class="person">
             <div class="avatar">A</div>
             <div class="person-info">
-              <strong>Chairman</strong>
-              <small>Strategic review</small>
+              <strong>Chairman controls</strong>
+              <small>Product portfolio changes</small>
             </div>
-            <div class="progress"><span style="width:94%"></span></div>
+            <div class="progress"><span id="productProgress" style="width:0%"></span></div>
           </div>
 
           <div class="person">
             <div class="avatar">F</div>
             <div class="person-info">
-              <strong>Founders</strong>
-              <small>Product direction</small>
+              <strong>Board rooms</strong>
+              <small>Persisted on this device</small>
             </div>
-            <div class="progress"><span style="width:81%"></span></div>
+            <div class="progress"><span id="roomProgress" style="width:0%"></span></div>
           </div>
 
           <div class="person">
             <div class="avatar">C</div>
             <div class="person-info">
-              <strong>CEO Office</strong>
-              <small>Operating plan</small>
+              <strong>Activity log</strong>
+              <small>Timestamped local changes</small>
             </div>
-            <div class="progress"><span style="width:76%"></span></div>
+            <div class="progress"><span id="updateProgress" style="width:0%"></span></div>
           </div>
 
           <div class="person">
             <div class="avatar">O</div>
             <div class="person-info">
-              <strong>Operations</strong>
-              <small>Execution system</small>
+              <strong>External data</strong>
+              <small>Not connected yet</small>
             </div>
-            <div class="progress"><span style="width:89%"></span></div>
+            <div class="progress"><span style="width:0%"></span></div>
           </div>
         </section>
       </div>
@@ -1398,6 +1419,18 @@ function recordOperation(message) {
   operations = operations.slice(0, 8);
   localStorage.setItem("flamingoOperations", JSON.stringify(operations));
   renderOperations();
+  renderBoardMetrics();
+}
+
+function renderBoardMetrics() {
+  const metrics = [
+    ["productMetric", products.length], ["roomMetric", customRooms.length + 2], ["updateMetric", operations.length]
+  ];
+  metrics.forEach(([id, value]) => { const element = document.getElementById(id); if (element) element.textContent = String(value).padStart(2, "0"); });
+  const progress = [["productProgress", products.length], ["roomProgress", customRooms.length + 2], ["updateProgress", operations.length]];
+  progress.forEach(([id, value]) => { const element = document.getElementById(id); if (element) element.style.width = `${Math.min(value * 20, 100)}%`; });
+  const chart = document.getElementById("activityChart");
+  if (chart) chart.innerHTML = `<div class="manager-help">${operations.length ? `${operations.length} recorded board update${operations.length === 1 ? "" : "s"} in this local workspace.` : "No board updates have been recorded yet."}</div>`;
 }
 
 function renderOperations() {
@@ -1412,7 +1445,8 @@ function renderProducts(activeId = products[0]?.id) {
   if (!tabs || !display) return;
   const active = products.find(product => product.id === activeId) || products[0];
   tabs.innerHTML = products.map(product => `<button class="product-tab ${product.id === active.id ? "active" : ""}" onclick="renderProducts('${product.id}')">${escapeHtml(product.name)}</button>`).join("");
-  const visual = active.logo ? `<img class="product-logo" src="${active.logo}" alt="${escapeHtml(active.name)} logo">` : '<div class="gema-orb" aria-hidden="true"></div>';
+  const artType = active.id === "argos" ? "argos" : active.id === "gema" ? "gema" : "new";
+  const visual = active.logo ? `<img class="product-logo" src="${active.logo}" alt="${escapeHtml(active.name)} logo" onerror="this.replaceWith(Object.assign(document.createElement('span'), { className: 'product-logo-fallback', textContent: '${escapeHtml(active.name)}' }))"><div class="product-art product-art--argos" aria-hidden="true"><span></span><span></span></div>` : `<div class="product-art product-art--${artType}" aria-hidden="true"><span></span><span></span></div>`;
   display.innerHTML = `<article class="product-card product-main glass"><div class="eyebrow">${escapeHtml(active.name).toUpperCase()} / FLAMINGO GROUP</div><h3>${escapeHtml(active.name)} for a moving world.</h3><p>${escapeHtml(active.description)}</p>${visual}</article><div class="side-stack">${active.capabilities.map((capability, index) => `<article class="small-card glass"><div class="number">CAPABILITY / ${String(index + 1).padStart(3, "0")}</div><h3>${escapeHtml(capability)}</h3><p>${index === 0 ? "Designed to bring clarity to the work that matters most." : "A focused product capability shaped by the Flamingo Group portfolio."}</p></article>`).join("")}</div>`;
 }
 
@@ -1436,7 +1470,7 @@ function saveProduct(event) {
     products.push({ id: `product-${Date.now()}`, name, description, capabilities: ["Core capability", "Portfolio capability"], logo: "" });
     recordOperation(`${name} product created by Chairman controls.`);
   }
-  persistProducts(); renderProducts(id || products.at(-1).id); renderProductManager(); resetProductForm();
+  persistProducts(); renderProducts(id || products.at(-1).id); renderProductManager(); renderBoardMetrics(); resetProductForm();
 }
 
 function editProduct(id) {
@@ -1450,7 +1484,7 @@ function editProduct(id) {
 function deleteProduct(id) {
   if (products.length === 1) return showBoardNotice("Keep at least one product in the portfolio.");
   const product = products.find(item => item.id === id);
-  products = products.filter(item => item.id !== id); persistProducts(); renderProducts(); renderProductManager();
+  products = products.filter(item => item.id !== id); persistProducts(); renderProducts(); renderProductManager(); renderBoardMetrics();
   recordOperation(`${product.name} product removed by Chairman controls.`);
 }
 
@@ -1548,6 +1582,7 @@ renderProducts();
 renderProductManager();
 renderOperations();
 renderRooms();
+renderBoardMetrics();
 </script>
 
 </body>
